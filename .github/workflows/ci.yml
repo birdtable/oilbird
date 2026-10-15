@@ -1,0 +1,260 @@
+# Continuous integration: the gates any contributor can satisfy, on every push
+# and pull request.
+#
+# This runs L1, the cheapest of the three layers of the clean-machine gate in
+# scripts/clean-machine-gate.sh: PATH cut to the minimum a Finder-launched app
+# gets, the environment cleared, and a throwaway container. L1 is the layer
+# meant for every commit; it is the only one of the three a hosted runner can
+# honestly do, for the reasons below.
+#
+# ── The Command Line Tools are the whole toolchain, and that shapes this file ──
+#
+# There is no install step here, and there must never be one. No Homebrew
+# formula, no npm, no pip, no third-party toolchain action that fetches a
+# Swift. The Xcode Command Line Tools and the repository are the whole
+# toolchain. If a step in this workflow ever needs something installed, the
+# requirement is what broke — fix that, do not add the install.
+#
+# One honest limitation: a hosted macOS runner ships a full Xcode, and this
+# workflow cannot uninstall it. So CI does not prove "Oilbird builds with the
+# Command Line Tools alone" — that is verified on a Mac with only the Command
+# Line Tools. What CI does prove is the half that rots silently: that the
+# build and the gates need nothing fetched or configured beyond a checkout.
+# The absence of an install step in this file is the evidence, and it is a
+# reviewable one.
+#
+# Relatedly: `swift test` is not run here and its absence is not an oversight.
+# Neither XCTest nor swift-testing is importable with the Command Line Tools,
+# so the suite is an executable target driven by `make test`. See the comment
+# on the oilbird-tests target in Package.swift before "fixing" this.
+#
+# ── What CI deliberately does NOT run, and cannot ──
+#
+#   L2 — a throwaway macOS user account. A hosted runner is a single
+#        ephemeral admin user. Creating a second account and driving a real
+#        login session through it is not something the runner supports, and a
+#        half-faked one would test nothing. L2 exists to catch user-level
+#        state — Homebrew on PATH, a stale ~/Library/Application Support/
+#        Oilbird, keychain contents — and it remains a before-merge step run
+#        by hand.
+#
+#   L3 — a fresh macOS VM. This needs nested macOS virtualisation, which
+#        hosted runners do not offer, and it needs Gatekeeper to evaluate a
+#        genuinely downloaded, quarantined bundle. A binary built in place is
+#        not quarantined, so a simulated L3 would pass for the wrong reason —
+#        which is worse than not running it. L3 remains a before-release step.
+#
+# scripts/clean-machine-gate.sh runs both by hand — L2 needs sudo, L3 needs
+# tart or `--local` — and this workflow does not paper over that. Nothing
+# here is evidence about L2 or L3, and a green badge must not be read as any.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# Read-only. This workflow builds and checks; it publishes nothing.
+permissions:
+  contents: read
+
+# macOS runners are the expensive ones, and a branch often gets three
+# pushes in a minute. Only the newest push needs to be answered.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ⚠ Two jobs beside `l1`, and they are SEPARATE on purpose rather than for
+  # tidiness. `l1` is the one whose evidence is "the build and the gates need
+  # nothing fetched or configured beyond a checkout", and the absence of an
+  # install step in it is that evidence. The two below build nothing and gate
+  # no Swift; keeping them out of `l1` keeps that
+  # claim reviewable. They also run in parallel, so neither is on the clock a
+  # pull request waits for.
+
+  # Data races behind `@unchecked Sendable`, which is a promise the Swift 6
+  # compiler accepts and never checks. Slow — the sanitizer costs about five
+  # times the run — which is the other reason it is not in `l1`.
+  tsan:
+    name: Thread Sanitizer
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+      - name: make tsan
+        run: make tsan
+
+  # Known vulnerabilities in what the BUILD pulls in: the six Swift packages
+  # in Package.resolved. OSV-Scanner reads the lockfile directly and needs no
+  # account, no vendor and no Swift.
+  #
+  # ⚠ It says nothing about SonarQube, the JDK, PostgreSQL or the scanner.
+  # Asked by purl — `pkg:maven/org.
+  # sonarsource.sonarqube/sonarqube@9.9.0`, `pkg:generic/postgresql@16.15`,
+  # `pkg:generic/openjdk@21.0.12` — OSV returned nothing for any of them, even a
+  # SonarQube old enough to have advisories. Feeding it an SBOM of the four
+  # would be a gate that cannot find anything, which reads the same as one
+  # that found nothing. Their freshness needs a different instrument.
+  supply-chain:
+    name: Supply chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+      # ⚠ The subdirectory, not the repository root. `google/osv-scanner-action`
+      # itself is a marketplace listing — an action.yml with branding and no
+      # `runs:` — and using it fails the job in two seconds with "Top level
+      # 'runs:' section is required". The action that runs is one level down.
+      #
+      # The direct action rather than the repo's own reusable workflows: those
+      # upload SARIF to code scanning. This one just scans and fails.
+      - name: OSV-Scanner
+        uses: google/osv-scanner-action/osv-scanner-action@v2.5.1
+        with:
+          scan-args: |-
+            --lockfile=Package.resolved
+
+  l1:
+    name: L1 — build, test, lint, gate
+    # ⚠ macos-26, and the version is load-bearing rather than housekeeping.
+    #
+    # SwiftTUI declares `swift-tools-version: 6.3`. macos-15 ships Xcode 16.4,
+    # which is Swift 6.1.2, and SwiftPM refuses a dependency whose manifest
+    # needs a newer tools version than the toolchain has.
+    #
+    # The `.macOS(.v15)` in Package.swift is a different number entirely: the
+    # oldest macOS Oilbird RUNS on, which says nothing about what compiles it.
+    # This one is what compiles it, and it tracks a Mac with only the Command
+    # Line Tools.
+    runs-on: macos-26
+    # A stalled transfer is one of the failure modes this project exists to
+    # handle (the `stall` fault). It should not also be a six-hour runner bill.
+    timeout-minutes: 30
+    defaults:
+      run:
+        # bash --noprofile --norc -eo pipefail. pipefail is load-bearing in the
+        # test step below, where make is piped into tee.
+        shell: bash
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      # Recorded, not configured. When a run starts failing because the runner
+      # image moved to a different default Xcode, this is the step that says
+      # so instead of leaving a compiler error to be interpreted.
+      - name: Record the toolchain
+        run: |
+          sw_vers
+          xcode-select --print-path
+          swift --version
+
+      - name: swift build
+        run: swift build
+
+      # The exit code is not the pass condition: `make test` must end
+      # 'N assertions, 0 failed', and a zero-failure run that asserted NOTHING
+      # is not a pass.
+      #
+      # That is a live failure mode here, not a hypothetical. Harness.finish()
+      # prints the count and exits 0 whenever the failure list is empty, and
+      # the suite has no discovery — Tests/OilbirdKitTests/main.swift is a
+      # hand-written registry. Delete a line from it, or land a suite and
+      # forget to register it, and the run prints "0 assertions, 0 failed" and
+      # exits 0. On the exit code alone CI would call that green, which is the
+      # exact shape of the bug the harness was built to refuse.
+      #
+      # So the summary line is parsed: it must be present, it must report zero
+      # failures, and the assertion count must be greater than zero.
+      - name: make test
+        run: |
+          log="$RUNNER_TEMP/oilbird-test.log"
+
+          # Deliberately not fail-fast: a non-zero make still has a summary
+          # worth reporting, and one clear message beats a bare exit code.
+          set +e
+          make test 2>&1 | tee "$log"
+          rc=${PIPESTATUS[0]}
+          set -e
+
+          summary="$(grep -E '^[0-9]+ assertions, [0-9]+ failed$' "$log" | tail -n 1 || true)"
+
+          if [ -z "$summary" ]; then
+            echo "::error::make test printed no 'N assertions, M failed' summary (exit $rc). A run that reports no count is not a pass."
+            exit 1
+          fi
+
+          asserted="${summary%% *}"
+          failed="${summary##*, }"
+          failed="${failed% failed}"
+
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::make test exited $rc — $summary"
+            exit 1
+          fi
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::$summary"
+            exit 1
+          fi
+
+          if [ "$asserted" -eq 0 ]; then
+            echo "::error::the suite asserted nothing. 0 assertions with 0 failures is not a pass — check Tests/OilbirdKitTests/main.swift still registers every suite."
+            exit 1
+          fi
+
+          echo "make test: $asserted assertions, 0 failed"
+
+      # How far the suite reaches, against the floor in coverage-budget.txt.
+      #
+      # ⚠ The suite runs TWICE and that is deliberate. `make test` above runs
+      # it in the configuration that ships and is the assertion gate; this one
+      # runs it instrumented, which is a different build, and is the
+      # measurement. Two minutes to keep the gate and the product in the same
+      # configuration is a trade worth making.
+      #
+      # No install step: `llvm-profdata` and `llvm-cov` are in the Command
+      # Line Tools. `swift test` still cannot run here and never could —
+      # coverage never needed it.
+      - name: make coverage
+        run: make coverage
+
+      # --strict lives inside the Makefile target and is load-bearing there:
+      # without it swift-format prints findings as warnings and exits 0, so the
+      # gate would pass silently. This step also runs every check in
+      # `oilbird-checks`.
+      #
+      # ⚠ Five of those checks read something outside the repository: a built
+      # binary, a running engine, an installed web app, an `llvm-cov` export.
+      # `make coverage` above leaves the export, so `coverage` runs; this
+      # runner has no engine and no web app, by design, so the checks that
+      # need one say NOT CHECKED in the log above and pass.
+      # Read the log rather than the tick when a SonarQube bump lands. The one
+      # arm that does run here is the version the overrides were verified
+      # against, which is why that arm is two strings and not a scan.
+      - name: make lint
+        run: make lint
+
+      # The L1 self-test: it proves the gate can be made to fail, which is the
+      # whole point of a gate nobody has ever seen fail. The full L1 body
+      # downloads 1.14 GiB and starts the engine, and is not run here.
+      - name: make gate
+        run: make gate
+
+      # Same contract: the fault matrix self-test proves an unknown fault slug
+      # is rejected rather than silently ignored.
+      - name: make faults
+        run: make faults
+
+      # SwiftLint, as a second opinion to swift-format. `--strict` is in the
+      # Makefile target and is load-bearing the same way `--strict` is for
+      # swift-format above: without it findings print and the command exits 0.
+      # Behind a baseline of one row, so a NEW finding is what fails this. It
+      # is a command plugin from a package dependency the checkout already
+      # declares, which is why it needs no install step either.
+      - name: make swiftlint
+        run: make swiftlint

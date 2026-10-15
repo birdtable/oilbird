@@ -1,0 +1,54 @@
+Oilbird
+Copyright (C) 2026 Marcus Yavorskyy
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version. See LICENSE.
+
+
+THIRD-PARTY SOFTWARE
+────────────────────
+
+Oilbird does not redistribute any of the following. It downloads each one at
+run time, from its official origin, onto the machine it is running on. Nothing
+below ships inside this repository or inside the application bundle, so none of
+these licences propagates into Oilbird's own source — but Oilbird causes them
+to be fetched and executed on a user's machine, and attribution is owed for
+that regardless.
+
+The pinned version, origin, size and SHA-256 of each live in
+Sources/OilbirdCore/Resources/manifest.json, which is the only place in this
+repository where a version of any of them appears.
+
+
+SonarQube Community Build
+  SonarSource S.A.
+  GNU Lesser General Public License v3.0
+  https://www.sonarsource.com/products/sonarqube/
+
+SonarScanner CLI
+  SonarSource S.A.
+  GNU Lesser General Public License v3.0
+
+Eclipse Temurin (OpenJDK)
+  Eclipse Foundation
+  GNU General Public License v2.0 with the Classpath Exception
+  https://adoptium.net/
+
+PostgreSQL
+  The PostgreSQL Global Development Group
+  The PostgreSQL Licence
+  https://www.postgresql.org/
+  Binaries packaged by Zonky (embedded-postgres-binaries), Apache License 2.0
+  https://github.com/zonkyio/embedded-postgres-binaries
+
+
+TRADEMARKS
+──────────
+
+Oilbird is not affiliated with, endorsed by, or sponsored by SonarSource S.A.
+SonarQube, SonarScanner and SonarLint are trademarks of SonarSource S.A. No
+Sonar mark appears in Oilbird's name, bundle identifier, icon or interface;
+the references above and in the documentation are attribution, which those
+licences require.

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="714" height="310" viewBox="0 0 714 310" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" role="img" aria-label="oilbird api projects/create">
+<title>oilbird api projects/create</title>
+<rect width="100%" height="100%" rx="6" fill="#0d1117"/>
+<text xml:space="preserve" x="29.6" y="27.6" textLength="148.2" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2" font-weight="600">api/projects/create</text>
+<text xml:space="preserve" x="201.2" y="27.6" textLength="46.8" lengthAdjust="spacingAndGlyphs" fill="#c9a227">writes</text>
+<text xml:space="preserve" x="29.6" y="65.3" textLength="624.0" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Create a project. If your project is hosted on a DevOps Platform, please use the</text>
+<text xml:space="preserve" x="29.6" y="84.1" textLength="624.0" lengthAdjust="spacingAndGlyphs" fill="#6f7680">import endpoint under api/alm_integrations, so it creates and properly configur…</text>
+<text xml:space="preserve" x="29.6" y="121.8" textLength="70.2" lengthAdjust="spacingAndGlyphs" fill="#6f7680">parameter</text>
+<text xml:space="preserve" x="29.6" y="140.7" textLength="78.0" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">mainBranch</text>
+<text xml:space="preserve" x="216.8" y="140.7" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">optional</text>
+<text xml:space="preserve" x="294.8" y="140.7" textLength="288.6" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Key of the main branch of the project</text>
+<text xml:space="preserve" x="29.6" y="159.5" textLength="31.2" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">name</text>
+<text xml:space="preserve" x="216.8" y="159.5" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#c9a227">required</text>
+<text xml:space="preserve" x="294.8" y="159.5" textLength="148.2" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Name of the project</text>
+<text xml:space="preserve" x="29.6" y="178.4" textLength="163.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">newCodeDefinitionType</text>
+<text xml:space="preserve" x="216.8" y="178.4" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">optional</text>
+<text xml:space="preserve" x="294.8" y="178.4" textLength="390.0" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Project New Code Definition Type New code definit…</text>
+<text xml:space="preserve" x="29.6" y="197.2" textLength="171.6" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">newCodeDefinitionValue</text>
+<text xml:space="preserve" x="216.8" y="197.2" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">optional</text>
+<text xml:space="preserve" x="294.8" y="197.2" textLength="390.0" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Project New Code Definition Value For each new co…</text>
+<text xml:space="preserve" x="29.6" y="216.1" textLength="54.6" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">project</text>
+<text xml:space="preserve" x="216.8" y="216.1" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#c9a227">required</text>
+<text xml:space="preserve" x="294.8" y="216.1" textLength="140.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Key of the project</text>
+<text xml:space="preserve" x="29.6" y="234.9" textLength="78.0" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">visibility</text>
+<text xml:space="preserve" x="216.8" y="234.9" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">optional</text>
+<text xml:space="preserve" x="294.8" y="234.9" textLength="179.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">one of: private, public</text>
+<text xml:space="preserve" x="29.6" y="272.6" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">Call it:</text>
+<text xml:space="preserve" x="29.6" y="291.5" textLength="475.8" lengthAdjust="spacingAndGlyphs" fill="#6a9bd8">oilbird api projects/create name=SonarQube project=my_project</text>
+</svg>

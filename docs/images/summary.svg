@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="714" height="178" viewBox="0 0 714 178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" role="img" aria-label="oilbird summary checkout-acd079e5">
+<title>oilbird summary checkout-acd079e5</title>
+<rect width="100%" height="100%" rx="6" fill="#0d1117"/>
+<text xml:space="preserve" x="29.6" y="27.6" textLength="132.6" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2" font-weight="600">checkout-acd079e5</text>
+<text xml:space="preserve" x="185.6" y="27.6" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">71 lines</text>
+<text xml:space="preserve" x="29.6" y="46.4" textLength="15.6" lengthAdjust="spacingAndGlyphs" fill="#78b47c">OK</text>
+<text xml:space="preserve" x="68.6" y="46.4" textLength="124.8" lengthAdjust="spacingAndGlyphs" fill="#6f7680">0 of 1 condition</text>
+<text xml:space="preserve" x="29.6" y="65.3" textLength="109.2" lengthAdjust="spacingAndGlyphs" fill="#6f7680">New violations</text>
+<text xml:space="preserve" x="521.0" y="65.3" textLength="163.8" lengthAdjust="spacingAndGlyphs" fill="#6f7680">0   must not exceed 0</text>
+<text xml:space="preserve" x="162.2" y="84.1" textLength="46.8" lengthAdjust="spacingAndGlyphs" fill="#6f7680">rating</text>
+<text xml:space="preserve" x="263.6" y="84.1" textLength="46.8" lengthAdjust="spacingAndGlyphs" fill="#6f7680">issues</text>
+<text xml:space="preserve" x="341.6" y="84.1" textLength="54.6" lengthAdjust="spacingAndGlyphs" fill="#6f7680">measure</text>
+<text xml:space="preserve" x="29.6" y="103.0" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">security</text>
+<text xml:space="preserve" x="162.2" y="103.0" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">A</text>
+<text xml:space="preserve" x="302.6" y="103.0" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">0</text>
+<text xml:space="preserve" x="341.6" y="103.0" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">coverage</text>
+<text xml:space="preserve" x="458.6" y="103.0" textLength="31.2" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">0.0%</text>
+<text xml:space="preserve" x="29.6" y="121.8" textLength="85.8" lengthAdjust="spacingAndGlyphs" fill="#6f7680">reliability</text>
+<text xml:space="preserve" x="162.2" y="121.8" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">C</text>
+<text xml:space="preserve" x="302.6" y="121.8" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">3</text>
+<text xml:space="preserve" x="341.6" y="121.8" textLength="85.8" lengthAdjust="spacingAndGlyphs" fill="#6f7680">duplication</text>
+<text xml:space="preserve" x="458.6" y="121.8" textLength="31.2" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">0.0%</text>
+<text xml:space="preserve" x="29.6" y="140.7" textLength="117.0" lengthAdjust="spacingAndGlyphs" fill="#6f7680">maintainability</text>
+<text xml:space="preserve" x="162.2" y="140.7" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">A</text>
+<text xml:space="preserve" x="302.6" y="140.7" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">6</text>
+<text xml:space="preserve" x="341.6" y="140.7" textLength="31.2" lengthAdjust="spacingAndGlyphs" fill="#6f7680">debt</text>
+<text xml:space="preserve" x="443.0" y="140.7" textLength="46.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">27 min</text>
+<text xml:space="preserve" x="29.6" y="159.5" textLength="62.4" lengthAdjust="spacingAndGlyphs" fill="#6f7680">hotspots</text>
+<text xml:space="preserve" x="162.2" y="159.5" textLength="7.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">A</text>
+<text xml:space="preserve" x="224.6" y="159.5" textLength="85.8" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">0 to review</text>
+<text xml:space="preserve" x="341.6" y="159.5" textLength="78.0" lengthAdjust="spacingAndGlyphs" fill="#6f7680">complexity</text>
+<text xml:space="preserve" x="474.2" y="159.5" textLength="15.6" lengthAdjust="spacingAndGlyphs" fill="#f2f2f2">13</text>
+</svg>

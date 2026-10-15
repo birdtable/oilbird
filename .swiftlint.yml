@@ -1,0 +1,150 @@
+# SwiftLint, as a second opinion to swift-format and not a replacement for it.
+#
+# swift-format already holds layout: 110 columns, four spaces, no force-try,
+# early exits. It runs on every `make lint` and it is the one that can fail
+# the build. SwiftLint is asked about the things a formatter cannot see --
+# a function that has grown past reading, a force unwrap, an empty catch --
+# and it is run on purpose, with `make swiftlint`.
+#
+# Rules are chosen, never inherited wholesale. A rule nobody agreed to is one
+# somebody disables at the first inconvenience, and a disabled rule reads the
+# same as a passing one.
+
+included:
+  - Sources
+  - Tests
+
+excluded:
+  - .build
+  - dist
+  - build
+
+# `analyzer_rules` need a compiled build and are not run here.
+opt_in_rules:
+  - array_init
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - discouraged_optional_boolean
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - fallthrough
+  - force_unwrapping
+  - first_where
+  - flatmap_over_map_reduce
+  - identical_operands
+  - joined_default_parameter
+  - last_where
+  - legacy_multiple
+  - lower_acl_than_parent
+  - modifier_order
+  - nimble_operator
+  - operator_usage_whitespace
+  - overridden_super_call
+  - prefer_self_type_over_type_of_self
+  - private_action
+  - private_outlet
+  - prohibited_super_call
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - sorted_first_last
+  - static_operator
+  - toggle_bool
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - untyped_error_in_catch
+  - yoda_condition
+
+disabled_rules:
+  # `Bool?` where the third state is real. SonarQube omits a field rather
+  # than sending false, and "the server did not say" is not "the server said
+  # no" -- collapsing the two is how a missing field becomes a claim. The
+  # `api` check returns one for the same reason: nil is "no engine answered".
+  - discouraged_optional_boolean
+  # `String(data:encoding:)` reads as what it is and keeps the nil path,
+  # which matters where the bytes came off a child process and may not be
+  # UTF-8 at all. The suggested spelling is the same optional wearing
+  # different punctuation.
+  - optional_data_string_conversion
+  # swift-format owns every one of these, and two formatters disagreeing
+  # about a line is a worse state than either opinion on its own.
+  - line_length
+  - trailing_comma
+  - opening_brace
+  - statement_position
+  - vertical_parameter_alignment
+  - closure_parameter_position
+  # Oilbird's comments carry the reasoning, which is the house style and is
+  # the subject of its own standard. A linter counting them is noise.
+  - todo
+  # `Harness.suite("...") { }` and SwiftTUI's `body` are both long by
+  # construction and neither is a function anybody reads top to bottom.
+  - closure_body_length
+  # swift-format lays out a multi-line array literal and this disagrees with
+  # where it puts the closing bracket. Every finding it produced was on
+  # swift-format's own output, which makes it a disagreement between two
+  # formatters rather than a rule about the code.
+  - literal_expression_end_indentation
+
+# Thresholds are warnings, and `make swiftlint` passes `--strict`, which
+# turns every one of them into a failure.
+#
+# ⚠ Left as plain warnings the target printed its findings and exited 0,
+# so nothing that read the exit code could tell a clean run from a dirty
+# one. A check that cannot fail reads the same as one that passes.
+force_cast: warning
+force_try: warning
+force_unwrapping: warning
+
+type_body_length:
+  warning: 500
+  error: 2000
+function_body_length:
+  warning: 120
+  error: 500
+file_length:
+  warning: 1200
+  error: 3000
+  ignore_comment_only_lines: true
+# ⚠ One function is recorded in `.swiftlint-baseline.json` against this:
+# `dispatch`, which is the verb table and nothing else. Its arm count IS
+# the verb count, so the rule reads a CLI with twenty-two verbs as a
+# function with twenty-three decisions. Splitting the table to satisfy
+# the number would give two places to look for one verb, and `parity`
+# reads that switch to hold the CLI against the MCP surface.
+cyclomatic_complexity:
+  warning: 20
+  error: 40
+type_name:
+  # `UI` and `Rx` are the whole word. A floor of three would rename both to
+  # something longer and less clear.
+  min_length: 2
+  max_length: 50
+identifier_name:
+  min_length: 1
+  max_length: 60
+  # `id`, `to`, `on` are not unclear; they are the whole word.
+  allowed_symbols: ["_"]
+nesting:
+  type_level: 3
+
+# SwiftLint's own `force_unwrapping` does not see `Type(...)!`: it skips a `!`
+# that follows a closing paren. That is the exact spelling this codebase had
+# six copies of -- `URL(string: "http://127.0.0.1:\(port)")!` -- and nothing
+# would have said so if a seventh landed. `Loopback` is where that went.
+custom_rules:
+  force_unwrapped_call:
+    name: "Force Unwrapped Call"
+    regex: '\)!'
+    message: "A call's result, force unwrapped. `guard let` and say what nil would mean, or `preconditionFailure` and say why it cannot be one."
+    severity: warning
+    excluded_match_kinds:
+      - comment
+      - doccomment
+      - doccomment.field
+      - string

@@ -1,0 +1,132 @@
+# The domain map and the import matrix, in one place.
+#
+# Domains inside OilbirdCore are caseless enums in one module, so there are no
+# import statements between them. The boundary is therefore checked by SYMBOL
+# REFERENCE — `Fetch.` appearing in Paths.swift is a violation just as an
+# import would be in a multi-module layout.
+#
+# Carve-outs are `file` (never a glob), `cell`, `because`, `retires_on`.
+# An expired carve-out fails the build; a carve-out that matched nothing is
+# stale, and there the zero IS the finding (DM-4).
+
+domains:
+  Model:     Sources/OilbirdModel
+  Paths:     Sources/OilbirdCore/Paths.swift
+  Log:       Sources/OilbirdCore/Log.swift
+  Resolver:  Sources/OilbirdCore/Resolver.swift
+  Manifest:  Sources/OilbirdCore/Manifest.swift
+  Bundled:   Sources/OilbirdCore/Bundled.swift
+  HTTP:      Sources/OilbirdCore/HTTP.swift
+  Fetch:     Sources/OilbirdCore/Fetch.swift
+  Install:   Sources/OilbirdCore/Install.swift
+  Ports:     Sources/OilbirdCore/Ports.swift
+  Owner:     Sources/OilbirdCore/Owner.swift
+  Child:     Sources/OilbirdCore/Child.swift
+  Readiness: Sources/OilbirdCore/Readiness.swift
+  Cluster:   Sources/OilbirdCore/Cluster.swift
+  CLITool:   Sources/OilbirdCore/CommandLineTool.swift
+  Tint:      Sources/OilbirdCore/Tint.swift
+  Prefs:     Sources/OilbirdCore/Preferences.swift
+  Idle:      Sources/OilbirdCore/Idle.swift
+  Project:   Sources/OilbirdCore/Project.swift
+  ScanCmd:   Sources/OilbirdCore/ScannerCommand.swift
+  Scan:      Sources/OilbirdCore/Scan.swift
+  Scans:     Sources/OilbirdCore/Scans.swift
+  Secrets:   Sources/OilbirdCore/Secrets.swift
+  Provision: Sources/OilbirdCore/Provisioning.swift
+  SonarAPI:  Sources/OilbirdCore/SonarAPI.swift
+  Supervise: Sources/OilbirdCore/Supervise.swift
+  # A folder, because these four are one domain. Folders create no
+  # namespace and enforce nothing -- they are organisation, and that is fine.
+  Deps:      Sources/OilbirdCore/Dependencies
+  Kit:       Sources/OilbirdKit
+  AppClient: Sources/OilbirdApp
+  CLIClient: Sources/OilbirdCLI
+  MCPClient: Sources/OilbirdMCP
+  # Drives the issue browser for the PTY journey test. A client like the
+  # others: it composes a Kit call and nothing else, and it is never shipped —
+  # `make app` copies `oilbird` and `oilbird-mcp` by name.
+  Fixture:   Sources/OilbirdBrowseFixture
+  # The gates, and the command that runs them. They read the repository as
+  # TEXT and link against none of it, which is why both rows below are empty:
+  # a gate that imported the code it checks could be made green by that code.
+  Checks:    Sources/OilbirdChecks
+  ChecksCLI: Sources/OilbirdChecksCLI
+
+# rows may reference columns. Anything absent is refused.
+may_reference:
+  Model:     []
+  Paths:     [Model]
+  Log:       [Paths]
+  Resolver:  [Model, Paths]
+  # What Oilbird ships with itself, found relative to the running
+  # executable. Reaches nothing: it is a file lookup, and a lookup that
+  # could reach Paths could be pointed at the container instead.
+  Bundled:   []
+  Manifest:  [Model, Bundled]
+  Fetch:     [Model, Paths, Log, HTTP]
+  Install:   [Model, Paths, Log, Resolver, Manifest]
+  # HTTP is a configured URLSession and nothing else. It reaches nothing.
+  HTTP:      []
+  # Ports logs when it cannot honour a remembered port, and silence there
+  # would make a moved port look like a mystery.
+  Ports:     [Log]
+  Owner:     [Model, Paths, Log]
+  Child:     [Model, Paths, Log, Resolver]
+  Readiness: []
+  # Cluster CREATES the data directory; it never starts or stops anything it
+  # did not create, and it reaches services only through Child.
+  #
+  # Manifest, because a data directory is readable only by the PostgreSQL
+  # major that wrote it and Cluster is the only place that pairing is
+  # decided. Reading the pinned major from anywhere else would be a version
+  # string outside manifest.json, which is a forbidden pattern; asking the
+  # installed binary instead would mean Cluster reaching into Deps, which is
+  # a much wider edge for a narrower fact.
+  Cluster:   [Model, Paths, Log, Resolver, Child, Ports, Readiness, Manifest]
+  # The one domain permitted to write outside the container, and only
+  # on explicit opt-in: the `oilbird` symlink in /usr/local/bin.
+  CLITool:   [Model, Log]
+  # Tint is a palette and a string escape. It reaches Paths only to locate
+  # the pinned server's stylesheet, so the gate can check its token names
+  # against the CSS that actually ships.
+  Tint:      [Paths, Bundled]
+  Prefs:     [Paths, Log]
+  # The idle policy and the attachment lock. It must NOT reach Supervise
+  # or Cluster: the stop action is injected by Kit, the only place that
+  # knows how to stop the engine.
+  Idle:      [Model, Paths, Log, Prefs]
+  # How the scanner is launched. Its own domain so that Scan and Deps
+  # can share it without being able to see each other.
+  ScanCmd:   [Model, Paths, Resolver]
+  # Project only inspects a directory. It reaches nothing.
+  Project:   []
+  Scan:      [Model, Paths, Log, Resolver, Child, Project, Secrets, SonarAPI, ScanCmd]
+  # What a scan left behind, so it can be followed after the fact.
+  # Supervise for one thing only: `Kernel`, where "is that pid still the
+  # process it was?" already lives. A second KERN_BOOTTIME sysctl here
+  # would be the same fact recorded twice, and the pid-identity rule in
+  # `Supervise.Kernel` is precisely the one this must not get wrong alone.
+  Scans:     [Model, Paths, Log, Supervise]
+  # Secrets HOLDS the credentials -- nothing else may. It reaches
+  # nothing outward, so nothing can pull a secret through it.
+  Secrets:   [Model, Paths]
+  Provision: [Model, Log, Secrets, HTTP]
+  # SonarAPI takes a base URL and a token as arguments. Not even Paths:
+  # that is what makes it testable against a fixture server.
+  SonarAPI:  [Model, HTTP]
+  Supervise: [Model, Paths, Log, Resolver, Child, Manifest, SonarAPI, Cluster, Deps, Secrets]
+  Deps:      [Model, Paths, Log, Resolver, Manifest, Fetch, Install, Child, Readiness, ScanCmd]
+  # Kit reaches Secrets and Scan directly, and that IS the credential
+  # boundary: the facade loads the token and injects it, so no client ever
+  # holds one. Kit is the last place a secret may be touched.
+  Kit:       [Model, Bundled, Paths, Log, Resolver, Manifest, HTTP, ScanCmd, Fetch, Install, Ports, Owner, Child, Readiness, Cluster, Deps, Secrets, Provision, SonarAPI, Supervise, Project, Scan, Scans, Tint, Prefs, Idle]
+  # Clients see the barrel and nothing else. One dependency, by design.
+  AppClient: [Kit]
+  CLIClient: [Kit]
+  MCPClient: [Kit]
+  Fixture:   [Kit]
+  Checks:    []
+  ChecksCLI: [Checks]
+
+carve_outs: []

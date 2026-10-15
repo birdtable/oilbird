@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "dependencies": {
+    "sonarqube": {
+      "version": "26.10.0.133078",
+      "url": "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-26.10.0.133078.zip",
+      "bytes": 949978521,
+      "sha256": "a23716457a73e44fff57c51d8999d97e59f4deee24cefb333918fe6c1ddb62c1",
+      "archive": "zip",
+      "verify": "server-up",
+      "licence": "LGPL-3.0"
+    },
+    "jdk": {
+      "version": "21.0.12+101.0.LTS",
+      "release": "jdk-21.0.12.1+1",
+      "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.12.1_1.tar.gz",
+      "bytes": 200073404,
+      "sha256": "3623232f33a9c3baadf304480b2535f9a3cba8a58d42ecbb438ba267315d9998",
+      "archive": "tar.gz",
+      "verify": "server-up",
+      "licence": "GPL-2.0-with-classpath-exception"
+    },
+    "postgres": {
+      "version": "16.15.0",
+      "url": "https://repo1.maven.org/maven2/io/zonky/test/postgres/embedded-postgres-binaries-darwin-arm64v8/16.15.0/embedded-postgres-binaries-darwin-arm64v8-16.15.0.jar",
+      "bytes": 61884586,
+      "sha256": "65b953905f0a4d46030767a6b44a52360170d69a7985f1b02aa435f2f6256a83",
+      "archive": "jar+txz",
+      "verify": "cluster-roundtrip",
+      "licence": "PostgreSQL AND Apache-2.0"
+    },
+    "scanner": {
+      "version": "7.3.0.5189",
+      "url": "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.3.0.5189.zip",
+      "bytes": 11619771,
+      "sha256": "a251d0793cb6bd889e4fd30299bb5dc4e07433e57133b16fc227aca98f8d2c2d",
+      "archive": "zip",
+      "verify": "scan-fixture",
+      "licence": "LGPL-3.0"
+    }
+  }
+}

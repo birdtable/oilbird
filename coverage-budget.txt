@@ -1,0 +1,37 @@
+# How far the suite reaches, recorded rather than wished for.
+#
+# `N assertions, 0 failed` says nothing about reach. These are the
+# lines the suite actually ran, as a floor: every number may go up and
+# none may go down. Tenths of a percent, because whole percents let
+# ninety lines of this repository go quiet without a word.
+#
+# Each figure is recorded one tenth UNDER what was measured. The suite
+# drives the CLI as a subprocess and some of those paths are timed, so
+# two runs of one commit differ by a line; a gate that fails on a rerun
+# that changed nothing is a gate somebody turns off.
+#
+# `make coverage` measures. `make coverage-budget` re-records, and doing
+# that to make room for a test you did not write is how a floor becomes
+# a ceiling.
+
+572 overall
+
+679 OilbirdCore
+508 OilbirdKit
+268 OilbirdModel
+
+# Files no test enters at all. This list is the work queue, and
+# a file that leaves it must leave this file too.
+
+Sources/OilbirdCore/Dependencies/ManagedDependency.swift
+Sources/OilbirdKit/API.swift
+Sources/OilbirdKit/EngineDetail.swift
+Sources/OilbirdKit/TUI/APIScreens.swift
+Sources/OilbirdKit/TUI/BareList.swift
+Sources/OilbirdKit/TUI/BrowserApp.swift
+Sources/OilbirdKit/TUI/ConfigurationScreen.swift
+Sources/OilbirdKit/TUI/ErrorScreen.swift
+Sources/OilbirdKit/TUI/ScanResultScreen.swift
+Sources/OilbirdKit/TUI/VersionScreen.swift
+Sources/OilbirdKit/TUI/WelcomeScreen.swift
+Sources/OilbirdModel/APICatalogue.swift

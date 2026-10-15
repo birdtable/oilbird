@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleIdentifier</key><string>com.birdtable.oilbird</string>
+  <key>CFBundleName</key><string>Oilbird</string>
+  <key>CFBundleExecutable</key><string>Oilbird</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>0.1.0</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>LSMinimumSystemVersion</key><string>15.0</string>
+  <key>NSHighResolutionCapable</key><true/>
+  <!-- A folder dropped on the Dock icon is a scan.
+       Without this the Dock refuses the drag outright, whatever the app is
+       willing to do with it: the Dock decides from the declared types alone,
+       before application(_:open:) is ever consulted. Alternate rank, because
+       Oilbird is not the handler for folders — Finder is, and it must stay
+       so. Viewer, because Oilbird reads a folder and never writes to it. -->
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeName</key><string>Folder</string>
+      <key>CFBundleTypeRole</key><string>Viewer</string>
+      <key>LSHandlerRank</key><string>Alternate</string>
+      <key>LSItemContentTypes</key>
+      <array><string>public.folder</string></array>
+    </dict>
+  </array>
+  <!-- Oilbird does not use the local network, and nothing in it should raise
+       this prompt: the one call that did — ProcessInfo.hostName, which goes
+       through Bonjour — is gone (see Owner.machineName). This stays as the
+       sentence macOS shows if a future dependency reintroduces one. Apple
+       supplies the title and its own wording about collecting data from
+       devices on your network; this replaces the body, which is the only
+       chance the user has to learn that Don't Allow costs them nothing. -->
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Oilbird runs SonarQube entirely on this Mac and never talks to your network. Denying this changes nothing about how Oilbird works.</string>
+  <!-- Oilbird talks only to 127.0.0.1, but ATS blocks cleartext by default and
+       a local server is not TLS. Scoped to loopback rather than opened wide. -->
+  <key>NSAppTransportSecurity</key>
+  <dict><key>NSAllowsLocalNetworking</key><true/></dict>
+</dict>
+</plist>

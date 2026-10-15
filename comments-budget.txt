@@ -1,0 +1,16 @@
+# What the commenting rules are owed, recorded rather than swept.
+#
+# Comments are not swept: they are rewritten when the code
+# beneath them is touched, so the change is reviewable in the same diff as
+# the behaviour it describes. This file is what that costs -- every number
+# here is a debt, and the `comments` check fails if one goes up.
+#
+# `make comments-budget` re-records it. Doing that to make room for
+# something you just wrote is how a budget becomes a place to hide.
+#
+# INLINE blocks only. A doc comment's home for a fact IS the
+# interface, so a doc comment has no length rule, and the cap
+# belongs to `//`.
+
+34 emphasis-percent
+

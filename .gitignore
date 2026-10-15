@@ -1,0 +1,26 @@
+.DS_Store
+.build/
+build/
+dist/
+*.app/
+DerivedData/
+*.xcodeproj/
+.swiftpm/
+scratch/
+Resources/AppIcon.icns
+
+# The scanner writes here if it is ever launched without
+# sonar.working.directory. Oilbird sets it; this catches a regression
+# before it reaches a commit.
+.scannerwork/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Coverage instrumentation. `make coverage` keeps its own under build/, but an
+# instrumented binary run WITHOUT LLVM_PROFILE_FILE drops `default.profraw`
+# wherever it happened to start -- the suite spawns `oilbird`, and a spawn
+# that loses the variable lands one here.
+*.profraw
+*.profdata

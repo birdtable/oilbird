@@ -1,0 +1,18 @@
+# The suites, and the two rules that do not apply to them.
+#
+# A suite entry point is `func scansTests() { Harness.suite { Harness.test
+# {...} Harness.test {...} ... } }`: a registry of independent tests, not a
+# function anybody reads top to bottom. Its length is the sum of the tests it
+# holds and its complexity is the count of their closures, so both rules
+# measure "how much is tested here" and call the answer a defect.
+#
+# Splitting one to satisfy the rule would produce `scansPartOneTests()` and
+# `scansPartTwoTests()`, an arbitrary cut that makes a test harder to find.
+# `closure_body_length` is already off in the root config for exactly this,
+# and these are the same reasoning reaching the same place by another route.
+#
+# ⚠ Off for the SUITES, not for the repository. The root config still holds
+# `Sources` to both rules, which is where a long function is a long function.
+disabled_rules:
+  - function_body_length
+  - cyclomatic_complexity

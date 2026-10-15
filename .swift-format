@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "lineLength": 110,
+  "indentation": { "spaces": 4 },
+  "rules": {
+    "AlwaysUseLiteralForEmptyCollectionInit": true,
+    "NeverUseForceTry": true,
+    "NoEmptyLinesOpeningClosingBraces": true,
+    "OmitExplicitReturns": true,
+    "UseEarlyExits": true
+  }
+}
